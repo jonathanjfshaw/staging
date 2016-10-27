@@ -1,0 +1,51 @@
+uuid: a12c0122-9b33-42e0-acdf-306757317c0f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comments_with_changes.default
+    - core.entity_view_mode.node.ahs_discuss
+    - field.field.node.discussion.body
+    - field.field.node.discussion.field_ancestry
+    - field.field.node.discussion.field_ancestry_plain
+    - field.field.node.discussion.field_children
+    - field.field.node.discussion.field_comments_with_changes
+    - field.field.node.discussion.field_parents
+    - node.type.discussion
+  module:
+    - comment
+    - user
+id: node.discussion.ahs_discuss
+targetEntityType: node
+bundle: discussion
+mode: ahs_discuss
+content:
+  field_children:
+    type: entity_reference_entity_view
+    weight: 1
+    label: hidden
+    settings:
+      view_mode: ahs_child
+      link: false
+    third_party_settings: {  }
+  field_comments_with_changes:
+    weight: 2
+    label: hidden
+    settings:
+      pager_id: 0
+      view_mode: default
+    third_party_settings: {  }
+    type: comment_default
+  field_parents:
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: ahs_ancestry
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+hidden:
+  body: true
+  field_ancestry: true
+  field_ancestry_plain: true
+  links: true

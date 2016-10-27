@@ -1,9 +1,9 @@
-uuid: effc822a-ab67-4b15-bfc5-f4c295d53eac
+uuid: b5378a97-af7a-42fe-8849-4be1b0d3e797
 langcode: en
 status: true
 dependencies:
   config:
-    - core.entity_view_mode.node.ahs_ancestry
+    - core.entity_view_mode.node.ahs_child
     - field.field.node.discussion.body
     - field.field.node.discussion.field_ancestry
     - field.field.node.discussion.field_ancestry_plain
@@ -13,20 +13,14 @@ dependencies:
     - node.type.discussion
   module:
     - user
-id: node.discussion.ahs_ancestry
+id: node.discussion.ahs_child
 targetEntityType: node
 bundle: discussion
-mode: ahs_ancestry
-content:
-  field_ancestry:
-    weight: 104
-    label: hidden
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
+mode: ahs_child
+content: {  }
 hidden:
   body: true
+  field_ancestry: true
   field_ancestry_plain: true
   field_children: true
   field_comments_with_changes: true

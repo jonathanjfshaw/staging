@@ -2,7 +2,6 @@ module:
   ahs_cer: 0
   ahs_discussions: 0
   ahs_display_widget: 0
-  ahs_er_enhanced: 0
   ahs_user_management: 0
   automated_cron: 0
   block: 0
@@ -19,7 +18,6 @@ module:
   ctools: 0
   datetime: 0
   dblog: 0
-  devel: 0
   diff: 0
   dynamic_page_cache: 0
   editor: 0
@@ -53,7 +51,6 @@ module:
   system: 0
   taxonomy: 0
   text: 0
-  token: 0
   toolbar: 0
   tour: 0
   update: 0
@@ -63,7 +60,6 @@ module:
   views_ui: 0
   filefield_sources: 1
   menu_link_content: 1
-  pathauto: 1
   views: 10
   minimal: 1000
 theme:

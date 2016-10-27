@@ -1,0 +1,19 @@
+uuid: 03d38fd2-5b57-4af1-a861-5337bac2b11a
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_trster
+field_name: field_trster
+entity_type: node
+type: entity_reference
+settings:
+  target_type: node
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

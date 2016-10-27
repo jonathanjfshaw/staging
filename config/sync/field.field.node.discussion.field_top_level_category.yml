@@ -1,0 +1,21 @@
+uuid: 95a7b4b9-a6d2-4d41-b7a9-a06b376af93b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_top_level_category
+    - node.type.discussion
+id: node.discussion.field_top_level_category
+field_name: field_top_level_category
+entity_type: node
+bundle: discussion
+label: 'Top-level category'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

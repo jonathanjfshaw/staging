@@ -1,15 +1,15 @@
-uuid: e461744a-5e95-496f-b3bb-4a1a0f5c0f16
+uuid: 62c2ba02-372d-4b49-bbee-9c8cf9c47e6c
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_parents
-    - node.type.discussion
-id: node.discussion.field_parents
-field_name: field_parents
+    - field.storage.node.field_trster
+    - node.type.test
+id: node.test.field_trster
+field_name: field_trster
 entity_type: node
-bundle: discussion
-label: 'This discussion is part of:'
+bundle: test
+label: trster
 description: ''
 required: false
 translatable: false
@@ -19,7 +19,7 @@ settings:
   handler: views
   handler_settings:
     view:
-      view_name: discussions_test
+      view_name: test_er
       display_name: entity_reference_1
       arguments: {  }
 field_type: entity_reference

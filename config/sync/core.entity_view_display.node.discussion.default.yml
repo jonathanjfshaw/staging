@@ -3,12 +3,14 @@ langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_view_display.comment.comments_with_changes.default
     - field.field.node.discussion.body
     - field.field.node.discussion.field_ancestry
     - field.field.node.discussion.field_ancestry_plain
     - field.field.node.discussion.field_children
     - field.field.node.discussion.field_comments_with_changes
     - field.field.node.discussion.field_parents
+    - field.field.node.discussion.field_top_level_category
     - node.type.discussion
   module:
     - comment
@@ -60,6 +62,15 @@ content:
       link: true
     third_party_settings: {  }
     type: entity_reference_label
+  field_top_level_category:
+    weight: 107
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
   links:
     weight: 100
     settings: {  }

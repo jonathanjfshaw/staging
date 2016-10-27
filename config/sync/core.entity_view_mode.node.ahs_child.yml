@@ -1,0 +1,10 @@
+uuid: 8b927a4e-a648-4f46-9bea-81f2e56cf355
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.ahs_child
+label: Child
+targetEntityType: node
+cache: true
