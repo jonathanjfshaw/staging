@@ -33,13 +33,12 @@ class CommentWithChanges {
     // If the author of the change recently made another change or comment
     // update that comment instead of making a new comment.
     // This keeps the comments easier to read and reduces notification noise.
-    //expect array with keys mandatory keys
-    // 'comment_type', 'field_name'
-    // and optional keys 
-    // 'subject', 'comment_body' and 'uid'. 
+    // Expect array with mandatory keys 'comment_type' and 'field_name',
+    // and optional keys 'subject', 'comment_body' and 'uid'. 
 
     // We omit to test comment_type is same current and last
-    // also will blow up if new fields added
+    // also will blow up if new fields added. Also opinionated about need for body.
+    // Fails to create a new comment without a body unless subject is 'Change record'.
 
     //Default to current user as author
     if (!isset($comment['uid'])) {
@@ -47,21 +46,37 @@ class CommentWithChanges {
     }
 
     // Get last comment; can be null if no previous comments exist
-    $lastCommentValues = $entity->{$comment['field_name']}->getValue()[0];
-    $lastComment = Comment::load($lastCommentValues['cid']);
-    $lastSubject = NULL;
-    if (!empty($lastComment)) {
-      $lastSubject = $lastComment->getSubject();
-    }
+    //$lastCommentValues = $entity->{$comment['field_name']}->getValue()[0];
 
+    /**
+     * @var $query \Drupal\Core\Entity\Query\QueryInterface
+     */
+    $query = \Drupal::entityQuery('comment');
+    $query
+      ->condition('entity_type', $entity->getEntityTypeId())
+      ->condition('entity_id', $entity->id())
+      ->condition('field_name', $comment['field_name'])
+      ->condition('status', 1)
+      ->sort('cid', 'DESC')
+      ->range(0,1);
+    $lastCommentIdArray = $query->execute();
+    if (!empty($lastCommentIdArray)) {
+      $lastCommentId = array_values($lastCommentIdArray)[0];
+      $lastComment = Comment::load($lastCommentId);
+      if (!empty($lastComment)) {
+        $lastSubject = $lastComment->getSubject();
+        $lastAuthor = $lastComment->getOwnerId();
+        $lastCreated = $lastComment->created->value;
+      }
+    }
     $this->setDefaultSubjectIfNeeded($comment);
 
     // Evaluate whether to update last comment or create new one
-    $hasLastSameAuthor = ($lastCommentValues['last_comment_uid'] === $comment['uid']);
-    $isLastWithinPeriod = ((REQUEST_TIME - $lastCommentValues['last_comment_timestamp']) < 30);
-    $isLastChangeRecord = ($lastSubject === 'Change record');
+    $hasLastSameAuthor = (isset($lastAuthor) && $lastAuthor === $comment['uid']);
+    $isLastWithinPeriod = (isset($lastCreated) &&  (REQUEST_TIME - $lastCreated) < 30);
+    $isLastChangeRecord = (isset($lastSubject) && $lastSubject === 'Change record');
     $isNewChangeRecord = ($comment['subject'] === 'Change record');
-    if ($lastComment && $hasLastSameAuthor && $isLastWithinPeriod && ($isLastChangeRecord || $isNewChangeRecord)) {
+    if (isset($lastComment) && $hasLastSameAuthor && $isLastWithinPeriod && ($isLastChangeRecord || $isNewChangeRecord)) {
       $this->updateLast($comment, $oldRevisionId, $newRevisionId, $diffFieldName, $entity, $lastComment);
     }
     else {
@@ -70,12 +85,10 @@ class CommentWithChanges {
   }
 
   protected function updateLast($comment, $oldRevisionId, $newRevisionId, $diffFieldName, $entity, CommentInterface $lastComment) {
-    $entityType = $entity->getEntityTypeId();
-
     // If there is a new revision of the host entity, update it on the comment
     if (!empty($newRevisionId)) {
       // If the last comment did not store changes, store the current revisions pair
-      if (empty($lastComment->$diffFieldName->entity_type)) {
+      if (empty($lastComment->$diffFieldName->right_rid)) {
         $lastComment->$diffFieldName->setValue([
           [
             'left_rid' => $oldRevisionId,
@@ -84,7 +97,7 @@ class CommentWithChanges {
         ]);
       }
       // If changes have already been stored, don't overwrite the older revision (left_rid)
-      elseif ($lastComment->$diffFieldName->entity_type === $entityType) {
+      else {
         $changes = $lastComment->$diffFieldName->getValue();
         $changes[0]['right_rid'] = $newRevisionId;
         $lastComment->$diffFieldName->setValue($changes);
@@ -92,7 +105,7 @@ class CommentWithChanges {
     }
 
     // Overwrite the old subject only if it was a change record.
-    if ($lastComment->subject->value === 'Change Record') {
+    if ($lastComment->subject->value === 'Change record') {
       $lastComment->setSubject($comment['subject']);
     }
 
@@ -108,7 +121,6 @@ class CommentWithChanges {
         }
       }
     }
-
       $lastComment->setCreatedTime(REQUEST_TIME);
       $lastComment->save();
   }
@@ -125,7 +137,6 @@ class CommentWithChanges {
     //Array merge: If the input arrays have the same string keys,
     // then the later value for that key will overwrite the previous one.
     $comment = array_merge($commentDefaults, $comment);
-
     // If we have a revisionId, fill that field.
     if (!empty($newRevisionId)) {
       $comment[$diffFieldName] = [
@@ -133,7 +144,6 @@ class CommentWithChanges {
         'right_rid' => $newRevisionId,
       ];
     }
-
     $comment = Comment::create($comment);
     $comment->setCreatedTime(REQUEST_TIME);
     $comment->save();

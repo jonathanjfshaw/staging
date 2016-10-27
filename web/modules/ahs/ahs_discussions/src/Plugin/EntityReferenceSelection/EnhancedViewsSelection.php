@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\ahs_er_enhanced\Plugin\EntityReferenceSelection;
+namespace Drupal\ahs_discussions\Plugin\EntityReferenceSelection;
 
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityManagerInterface;

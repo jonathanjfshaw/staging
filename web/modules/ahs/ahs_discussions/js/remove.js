@@ -1,7 +1,7 @@
 (function ($, Drupal) {
-    Drupal.behaviors.erEnhanced = {
+    Drupal.behaviors.ahsPreview = {
         attach: function (context, settings) {
-            $(context).find('a.er-enhanced-remove').once('erEnhancedRemove').each(function () {
+            $(context).find('a.ahs-preview-remove').once('ahsPreviewRemove').each(function () {
                 // Apply the erEnhancedRemove effect to the elements only once.
                 $(this).click(function(event){
                     // Stop the link clicking from moving the page
@@ -15,7 +15,7 @@
 
             // Hide existing field items that have been emptied
             // Without this, they get reshown when "Add more" is pressed
-            $(context).find(".er-enhanced-existing input").filter(function() {
+            $(context).find(".ahs-preview-existing input").filter(function() {
                 return !this.value;
             }).each(function () {
                 $(this).closest('tr.draggable').hide();

@@ -8,6 +8,11 @@ use Drupal\Core\Entity\EntityTypeManager;
 /**
  * Class simple_cer.
  *
+ * Note: autocreated entities are created before their creators are updated;
+ * this means they trigger the creation of a corresponding reference to them
+ * on their parents before their parents have finished saving that reference for
+ * themselves.
+ *
  * @package Drupal\ahs_cer
  */
 class simple_cer {
@@ -35,7 +40,7 @@ class simple_cer {
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The changed entity.
    */
-  public function updateReferences($thisFieldName, $correspondingFieldName, ContentEntityInterface $entity) {
+  public function updateReferences($thisFieldName, $correspondingFieldName, ContentEntityInterface $entity, $setNewRevision = FALSE) {
     // Find out which references have just been added and removed.
     if (empty($entity->original)) {
       // This is a newly created entity.
@@ -55,12 +60,12 @@ class simple_cer {
 
     // For removed references, remove this entity from the corresponding field
     foreach ($removedReferencedEntities as $removedReferencedEntity) {
-      $this->removeCorrespondingReference($correspondingFieldName, $entity->id(), $removedReferencedEntity);
+      $this->removeCorrespondingReference($correspondingFieldName, $entity->id(), $removedReferencedEntity, $setNewRevision);
     }
 
     // For added references, append this entity to the corresponding field
     foreach ($addedReferencedEntities as $addedReferencedEntity) {
-      $this->addCorrespondingReference($correspondingFieldName, $entity->id(), $addedReferencedEntity);
+      $this->addCorrespondingReference($correspondingFieldName, $entity->id(), $addedReferencedEntity, $setNewRevision);
     }
 
   }
@@ -74,7 +79,7 @@ class simple_cer {
    * @param $referencedEntity
    *   The referenced entity that needs its corresponding field updating.
    */
-  public function addCorrespondingReference($correspondingFieldName, $refererId, ContentEntityInterface $referencedEntity) {
+  public function addCorrespondingReference($correspondingFieldName, $refererId, ContentEntityInterface $referencedEntity, $setNewRevision = FALSE) {
     $correspondingField = $referencedEntity->get($correspondingFieldName);
 
     // Make sure reference is not already present; this happens for a
@@ -90,6 +95,7 @@ class simple_cer {
       // Tricky array nesting continued.
       $desiredReferences[] = $newReference[0];
       $correspondingField->setValue($desiredReferences);
+      $referencedEntity->setNewRevision($setNewRevision);
       $referencedEntity->save();
     }
   }
@@ -103,12 +109,19 @@ class simple_cer {
    * @param $referencedEntity
    *   The referenced entity that needs its corresponding field updating.
    */
-  public function removeCorrespondingReference($correspondingFieldName, $refererId, ContentEntityInterface $referencedEntity) {
+  public function removeCorrespondingReference($correspondingFieldName, $refererId, ContentEntityInterface $referencedEntity, $setNewRevision = FALSE) {
     $correspondingField = $referencedEntity->get($correspondingFieldName);
     $currentReferences = $correspondingField->getValue();
     $desiredReferences = $this->nested_array_diff([['target_id' => $refererId]], $currentReferences);
-    $correspondingField->setValue($desiredReferences);
-    $referencedEntity->save();
+
+    // Make sure reference is still present; this happens for a
+    // 'hook within a hook' when a parent updates a child and so the child then
+    // tries to update the parent.
+    if (count($desiredReferences) !== count($currentReferences)) {
+      $correspondingField->setValue($desiredReferences);
+      $referencedEntity->setNewRevision($setNewRevision);
+      $referencedEntity->save();
+    }
   }
 
   protected function nested_array_diff($a1, $a2) {
