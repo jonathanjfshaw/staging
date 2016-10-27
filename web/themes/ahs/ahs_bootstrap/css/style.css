@@ -9,6 +9,7 @@
  * Used for discussion content type, field_parents, where we show a fake "Discuss" preview
  * to act as a breadcrumb, which should still be there for top level discussions that have no parent.
  */
+/*
 .er-enhanced-hideui .er-enhanced-new.ahs-newonly {
     display:block;
 }
@@ -21,7 +22,7 @@
 .er-enhanced-hideui .er-enhanced-new.er-enhanced-previewing .form-item {
     display:none;
 }
-
+*/
 .field--name-field-parents ol.breadcrumb {
     margin: 0px;
     background:inherit;
@@ -33,8 +34,8 @@ form.node-discussion-ahs-discuss-form .field--name-field-children button.tabledr
     display:none;
 }
 
-.field--name-field-parents .er-enhanced-preview.form-group,
-.field--name-field-children .er-enhanced-preview.form-group,
+.field--name-field-parents .ahs-preview-preview.form-group,
+.field--name-field-children .ahs-preview-preview.form-group,
 form.node-discussion-ahs-discuss-form .field--name-field-parents table.field-multiple-table,
 form.node-discussion-ahs-discuss-form .field--name-field-children table.field-multiple-table {
     margin-bottom: 0px;
@@ -120,7 +121,7 @@ form.node-discussion-ahs-discuss-form {
 
 form.node-discussion-ahs-discuss-form .field-label,
 form.node-discussion-ahs-discuss-form .control-label{
-    fonts-size:80%;
+    font-size:80%;
     font-weight:normal;
 }
 /*
